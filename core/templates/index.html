@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <style>
+    .info-tiles {
+      margin: 1rem 0;
+    }
+    .info-tiles .subtitle {
+      font-weight: 300;
+      color: #8f99a3;
+    }
+    .hero.welcome.is-info {
+      background: #36d1dc;
+      background: -webkit-linear-gradient(to right, #5b86e5, #36d1dc);
+      background: linear-gradient(to right, #5b86e5, #36d1dc);
+    }
+    .hero.welcome .title,
+    .hero.welcome .subtitle {
+      color: hsl(192, 17%, 99%);
+    }
+    .card .content {
+      font-size: 18px;
+    }
+    .item {
+      padding-left: 24px !important;
+    }
+    .card-header-title {
+      font-size: 28px;
+    }
+    .form {
+      padding: .75rem 1rem;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <section class="hero is-info welcome is-small">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          {% if user.is_authenticated %}
+            Hey {{ user.get_username }}!
+          {% else %}
+            Hey there!
+          {% endif %}
+        </h1>
+        <h3 class="subtitle">
+          What's cooking?
+        </h3>
+      </div>
+    </div>
+  </section>
+  <section class="info-tiles">
+    <div class="tile is-ancestor has-text-centered">
+      <div class="tile is-parent">
+        <article class="tile is-child box">
+          <p class="title">{{ user_count }}</p>
+          <p class="subtitle">Users</p>
+        </article>
+      </div>
+      <div class="tile is-parent">
+        <article class="tile is-child box">
+          <p class="title">{{ items|length }}</p>
+          <p class="subtitle">Items</p>
+        </article>
+      </div>
+    </div>
+  </section>
+  {% if user.is_authenticated %}
+  <section class="card" style="margin-bottom: 16px">
+    <header class="card-header" style="box-shadow: none">
+      <p class="card-header-title">
+        Enter an item
+      </p>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <form method="post" autocomplete="off">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="field">
+              <label class="label">{{ field.label }}</label>
+              <div class="control">
+                <input
+                  class="input {% if field.errors %}is-danger{% endif %}"
+                  name="{{ field.html_name }}"
+                  value="{{ field.value }}"
+                >
+              </div>
+              {% for error in field.errors %}
+                <p class="help is-danger">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <button class="button is-link" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+  <section class="card">
+    {% if items %}
+    <header class="card-header">
+      <p class="card-header-title">
+        Items
+      </p>
+    </header>
+    <div class="card-table">
+      <div class="content">
+        <table class="table is-fullwidth is-striped">
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td class="item">
+                  <h6>{{ item.name }} ({{ item.owner }})</h6>
+                  <p>
+                    Entered: {{ item.time_entered}}
+                    {% if item.expiration_date %}
+                      <br />
+                      Expires: {{ item.expiration_date }}
+                    {% endif %}
+                  </p>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="card-content">
+      <div class="content">
+        No items entered yet, go add some!
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+  <script>
+    // Initializing date/time pickers
+    flatpickr(document.querySelector('input[name="time_entered"]'), {
+      enableTime: true,
+      dateFormat: "n/j/y, h:i K",
+      defaultDate: new Date()
+    });
+    flatpickr(document.querySelector('input[name="expiration_date"]'), {
+      dateFormat: "n/j/y"
+    });
+  </script>
+{% endblock %}
