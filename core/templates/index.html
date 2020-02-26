@@ -87,7 +87,7 @@
                 <input
                   class="input {% if field.errors %}is-danger{% endif %}"
                   name="{{ field.html_name }}"
-                  value="{{ field.value }}"
+                  value="{{ field.value|default_if_none:'' }}"
                 >
               </div>
               {% for error in field.errors %}
