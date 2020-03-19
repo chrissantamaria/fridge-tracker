@@ -6,25 +6,5 @@ services:
     command: gunicorn fridge_tracker.wsgi:application --bind 0.0.0.0:8000
     ports:
       - '80:8000'
-    environment:
-      - SQL_ENGINE=django.db.backends.postgresql
-      - SQL_DATABASE=django_dev
-      - SQL_USER=django
-      - SQL_PASSWORD=django
-      - SQL_HOST=db
-      - SQL_PORT=5432
     env_file:
       - ./.env.prod
-    depends_on:
-      - db
-  db:
-    image: postgres:12.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=django
-      - POSTGRES_PASSWORD=django
-      - POSTGRES_DB=django_dev
-
-volumes:
-  postgres_data:
