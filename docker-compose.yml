@@ -28,6 +28,8 @@ services:
       - POSTGRES_USER=django
       - POSTGRES_PASSWORD=django
       - POSTGRES_DB=django_dev
+    ports:
+      - '5432:5432'
 
 volumes:
   postgres_data:
