@@ -1,0 +1,20 @@
+name: Continuous Integration
+
+on: pull_request
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run Docker-Compose services
+        run: |
+          docker-compose up -d
+      - name: Wait for Django start
+        run: |
+          while ! nc -z localhost 8000; do
+            sleep 0.1
+          done
+      - name: Run Django Tests
+        run: |
+          docker-compose exec -T web python manage.py test
